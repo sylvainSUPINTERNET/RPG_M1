@@ -31,48 +31,61 @@ session_start();
 //$current_boss = CharacterChar::unseralizeSession($_SESSION["current_boss"]);
 //$current_character = CharacterChar::unseralizeSession($_SESSION["current_character"]);
 
+
+//set stats with items in inventory if he has items
+
+
+
 $current_boss = $_SESSION["boss"];
 $current_character = $_SESSION["character"];
 
+if (!$_SESSION["character"]->isBuffActivated()) {
+    $_SESSION["character"]->setBuffFromItems();
+    var_dump("SET BUFF FROM ITEMS DONE");
+}
 
 //init turn system
 $turnManager = new TurnManager(); //default played is false;
 $_SESSION["attacked"] = $turnManager->isPlayed(); //default false
 
+
+
+
 //init turn
 if (isset($_POST["attack"])) {
-
     //apply char damage to boss
     $current_character->attack($current_character, $current_boss);
-
+    Spell::charSpell($current_character, $current_boss);
     //update turn of characater
     $turnManager->charAttacked();
-
 }
+
+
 
 if (isset($_POST["pass_turn"])) {
     //apply damage + make the boss play and dialog + reset turn to false
 
-    //apply boss damage to char
-    $current_boss->attack($current_boss, $current_character);
-
-    //reset turn
-    $turnManager->bossAttacked();
-
-
     //character dead
-    if($current_character->getHp() <= 0){
+    if ($current_character->getHp() <= 0) {
         header('Location: dead.php');
-    }
-
-    //boss dead
-    if($current_boss->getHp() <= 0){
+    } else if //boss dead
+    ($current_boss->getHp() <= 0) {
         //set drop item
         $loots = $_SESSION["raid"]->getTableItems();
-        $_SESSION["ITEM_DROP"] = $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) -1)];
-        $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) -1)];
+        $_SESSION["ITEM_DROP"] = $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) - 1)];
+        $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) - 1)];
         header('Location: win.php');
+    } else {
+
+        //apply boss damage to char
+        $current_boss->attack($current_boss, $current_character);
+        Spell::bossSpell($current_boss, $current_character);
+
+        //reset turn
+        $turnManager->bossAttacked();
     }
+
+
 
 }
 
@@ -101,8 +114,77 @@ if (isset($_POST["pass_turn"])) {
                                    style="color:dodgerblue"></i> <?php echo $current_character->getMana() ?>
                             </li>
                         </ul>
+                        <div>
+                            <h5 class=""><i class="fa fa-shopping-bag"></i> Inventaire</h5>
+                            <?php if (isset($_SESSION["inventory"]) && sizeof($_SESSION["inventory"]) > 0) { ?>
+                                <?php foreach ($_SESSION["inventory"] as $item) { ?>
+                                    <ul>
+                                        <?php
+                                        if ($item->getQuality() === "green") { ?>
+                                            <p style="color: limegreen;" class="mb-2 mt-2">
+                                                [
+                                                <?php echo $item->getName(); ?>
+                                                ]
+                                            </p>
+                                            <?php
+                                        } ?>
 
-                        <h5 class=""><i class="fa fa-shopping-bag"></i> Inventaire</h5>
+                                        <?php
+                                        if ($item->getQuality() === "blue") { ?>
+                                            <p style="color: royalblue;" class="mb-2 mt-2">
+                                                [
+                                                <?php echo $item->getName(); ?>
+                                                ]
+                                            </p>
+                                            <?php
+                                        } ?>
+
+                                        <?php
+                                        if ($item->getQuality() === "purple") { ?>
+                                            <p style="color: rebeccapurple;" class="mb-2 mt-2">
+                                                [
+                                                <?php echo $item->getName(); ?>
+                                                ]
+                                            </p>
+                                            <?php
+                                        } ?>
+
+                                        <?php
+                                        if ($item->getQuality() === "orange") { ?>
+                                            <p style="color: orange;" class="mb-2 mt-2">
+                                                [
+                                                <?php echo $item->getName(); ?>
+                                                ]
+                                            </p>
+                                            <?php
+                                        } ?>
+                                        <img class="rounded" src="<?php echo $item->getItemIconName(); ?>">
+
+                                        <i class="fa fa-fist-raised"
+                                           style="color:dimgrey"></i>
+                                        <?php echo $item->getStatAtk() ?>
+                                        <i class="fa fa-heart"
+                                           style="color:darkred"></i>
+                                        <?php echo $item->getStatHealth() ?>
+                                        <i class="fa fa-gem"
+                                           style="color:dodgerblue"></i>
+                                        <?php echo $item->getStatMana() ?>
+                                        <br>
+                                        <div class="mt-3">
+                                            <h6>Buff</h6>
+                                            <p><?php echo $item->getStatSpecial() ?></p>
+                                            <img class="rounded" src="<?php echo $item->getStatSpecialIcon() ?>">
+                                        </div>
+
+                                    </ul>
+                                    <hr>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <p class="text-center">You are naked.</p>
+                            <?php } ?>
+
+                        </div>
+
 
                     </div>
                 </div>
@@ -116,12 +198,20 @@ if (isset($_POST["pass_turn"])) {
                 <?php
                 //character attacked
                 if ($_SESSION["attacked"] == true) {
-                    echo $current_character->getHereo() . " : ".  $current_character->getQuotes()[$current_character->getHereo()][Utils::getRandom(0,2)];
+                    echo $current_character->getHereo() . " : " . $current_character->getQuotes()[$current_character->getHereo()][Utils::getRandom(0, 2)];
                 } else {
-                    echo $current_boss->getHereo() . " : ". $current_boss->getQuotes()[$current_boss->getHereo()][Utils::getRandom(0,2)];
+                    echo $current_boss->getHereo() . " : " . $current_boss->getQuotes()[$current_boss->getHereo()][Utils::getRandom(0, 2)];
                     //boss attacked
                 } ?>
             </p>
+
+            <?php
+            //character attacked
+            if (isset($_SESSION["ITEMS_PROC_DIALOG"]) && $_SESSION["ITEMS_PROC_DIALOG"] != "") { ?>
+                <p class="mt-2 alert alert-primary">
+                    <?php echo $_SESSION['ITEMS_PROC_DIALOG'] ?>
+                </p>
+            <?php } ?>
 
             <br>
             <br>
@@ -154,6 +244,18 @@ if (isset($_POST["pass_turn"])) {
         </div>
         <div class="col-md-4">
             <div class="card" style="width: 22rem;">
+                <p class="alert alert-danger">
+                    <?php
+                        if(isset($_SESSION["SPELL_BOSS_CAST"])){?>
+                            <p><?php echo $current_boss->getHereo()
+                        . " cast".
+                        $_SESSION["SPELL_BOSS_CAST"]["name"] . " for " . $_SESSION["SPELL_BOSS_CAST"]["mana_cost"] . " mana" ?>
+                </p>
+
+                    ICON TOOD + BUG mana (faire attention au call de la regen sinon ca fausse le resultat);
+                </p>
+                        <?php }?>
+                </p>
                 <img class="card-img-top" src="<?php echo $current_boss->getPicPath() ?>" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title text-center"><?php echo $current_boss->getHereo() ?></h5>

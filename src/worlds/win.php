@@ -1,6 +1,8 @@
 <?php
 require_once '../../autoload.php';
 session_start();
+
+var_dump($_SESSION["character"]);
 ?>
 
 <!doctype html>
@@ -25,44 +27,63 @@ session_start();
 </head>
 
 <body class="container">
-<h2 class="text-center mt-4">GG, new item collected !</h2>
 
-<div class="card">
-    <ul>
-        <li style="list-style-type: none">
-            <h3><?php echo $_SESSION["ITEM_DROP"]->getName() ?></h3>
-        </li>
-        <li style="list-style-type: none" class="row">
-            <div class="col-md-2">
+<h2 class="text-center mt-4">GG, <?php echo $_SESSION["boss"]->getHereo() . " has been defeated."?></h2>
+<div class="row">
+    <div class="col-md-6">
+        <?php
+        if($_SESSION["ITEM_DROP"]->getQuality() === "green"){ ?>
+            <h3 style="color: limegreen;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
+            <?php
+        }?>
+
+        <?php
+        if($_SESSION["ITEM_DROP"]->getQuality() === "blue"){ ?>
+            <h3 style="color: royalblue;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
+            <?php
+        }?>
+
+        <?php
+        if($_SESSION["ITEM_DROP"]->getQuality() === "purple"){ ?>
+            <h3 style="color: rebeccapurple;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
+            <?php
+        }?>
+
+        <?php
+        if($_SESSION["ITEM_DROP"]->getQuality() === "orange"){ ?>
+            <h3 style="color: orange;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
+            <?php
+        }?>
+        <div class="row">
+            <div class="col-md-12">
                 <img src="<?php echo $_SESSION["ITEM_DROP"]->getItemIconName() ?>">
+                <i class="fa fa-heart"
+                   style="color:darkred"></i> <?php echo $_SESSION["ITEM_DROP"]->getStatAtk() ?>
+                <i class="fa fa-fist-raised"
+                   style="color:dimgrey"></i> <?php echo $_SESSION["ITEM_DROP"]->getStatHealth() ?>
+                <i class="fa fa-gem"
+                   style="color:dodgerblue"></i>
+                <?php echo $_SESSION["ITEM_DROP"]->getStatMana() ?>
+                Bonus :
+                <img src="<?php echo $_SESSION["ITEM_DROP"]->getStatSpecialIcon() ?>">
+                <strong><?php echo $_SESSION["ITEM_DROP"]->getStatSpecial() ?></strong>
             </div>
-            <div class="col-md-5">
-                <ul>
-                    <li style="list-style-type: none">
-                        <i class="fa fa-heart"
-                           style="color:darkred"></i> <?php echo $_SESSION["ITEM_DROP"]->getStatAtk() ?>
-                    </li>
-                    <li style="list-style-type: none">
-                        <i class="fa fa-fist-raised"
-                           style="color:dimgrey"></i> <?php echo $_SESSION["ITEM_DROP"]->getStatHealth() ?>
-                    </li>
+    </div>
 
-                    <li style="list-style-type: none">
-                        Bonus :
-                        <strong><?php echo $_SESSION["ITEM_DROP"]->getStatSpecial() ?></strong>
-                        <br>
-                        <img src="<?php echo $_SESSION["ITEM_DROP"]->getStatSpecialIcon() ?>">
-                    </li>
-                </ul>
-            </div>
-        </li>
-    </ul>
+        <br>
+        <div class="mt-5">
+            <a href="../start.php" class="btn btn-primary btn-lg"> Go back to wolrd selection</a>
+            <a href="reset.php" class="btn btn-danger btn-lg"> Reset the game</a>
+        </div>
 </div>
 
+    <?php
+        $inventory = new Inventory();
+        $inventory->addItem($_SESSION["ITEM_DROP"]);
 
-todo -> set 1 new item to user /
-todo -> set item + stat + special to user session
--> redirect to home (with new items)
--> spell ( add spell linked to his new item ) and add button (use my spell (cost mana))
+        //reset buff activated to update stats for next fight
+        $_SESSION["character"]->setBuffActivated(false);
+        ?>
+
 </body>
 </html>

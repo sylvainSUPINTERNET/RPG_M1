@@ -13,6 +13,7 @@ abstract class ActionChar
 
     abstract function attack( $attaquant, $target);
     abstract function specialAttack($attaquant, $target);
+    abstract function regenMana();
 
 
     /**

@@ -12,15 +12,20 @@ class Item {
     protected $name = "";
     protected $stat_atk = 0;
     protected $stat_health = 0;
+    protected $stat_mana = 0;
+
+    protected $quality = "";
 
     protected $item_icon_name = "";
 
 
-    //todo
+    protected $item_buff_proc_dialog = "";
+
+
     protected $stat_special = "";
     protected $stat_special_icon = "";
 
-    public function __construct($name, $stat_atk, $stat_health,$stat_special, $icon_name, $stat_special_icon_name)
+    public function __construct($name, $stat_atk, $stat_health,$stat_special, $icon_name, $stat_special_icon_name, $stat_mana, $quality, $item_buff_proc_dialog)
     {
         $this->name = $name;
         $this->stat_atk = $stat_atk;
@@ -28,7 +33,11 @@ class Item {
         $this->stat_special = $stat_special;
         $this->item_icon_name = $icon_name;
         $this->stat_special_icon = $stat_special_icon_name;
+        $this->stat_mana = $stat_mana;
 
+        $this->quality = $quality;
+
+        $this->item_buff_proc_dialog = $item_buff_proc_dialog;
     }
 
 
@@ -128,6 +137,54 @@ class Item {
     public function setStatSpecialIcon($stat_special_icon)
     {
         $this->stat_special_icon = $stat_special_icon;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatMana()
+    {
+        return $this->stat_mana;
+    }
+
+    /**
+     * @param int $stat_mana
+     */
+    public function setStatMana($stat_mana)
+    {
+        $this->stat_mana = $stat_mana;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuality()
+    {
+        return $this->quality;
+    }
+
+    /**
+     * @param string $quality
+     */
+    public function setQuality($quality)
+    {
+        $this->quality = $quality;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemBuffProcDialog()
+    {
+        return $this->item_buff_proc_dialog;
+    }
+
+    /**
+     * @param string $item_buff_proc_dialog
+     */
+    public function setItemBuffProcDialog($item_buff_proc_dialog)
+    {
+        $this->item_buff_proc_dialog = $item_buff_proc_dialog;
     }
 
 

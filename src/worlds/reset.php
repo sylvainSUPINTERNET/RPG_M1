@@ -1,12 +1,18 @@
 <?php
-
-require_once '../../autoload.php';
-
 session_start();
 
+/**
+ * Created by PhpStorm.
+ * User: sylvainjoly
+ * Date: 06/12/2018
+ * Time: 12:18
+ */
+
+
+session_destroy();
 ?>
 <!doctype html>
-<html lang="en" style="background-image: url('../assets/fortnite/kids.gif')">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -25,40 +31,8 @@ session_start();
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
           integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 </head>
-<body class="container">
 
-<?php
-
-$item_1 = new Item("PickAxe", 20, 20, "Let's BUILD", "fortnite_pickaxe.jpg", "cool_boy.jpg", 10, "purple", "B U I L D");
-
-if(isset($_POST["pickaxe"])){
-    $inventory = new Inventory();
-    $inventory->addItem($item_1);
-    header('Location: ../start.php');
-}
-
-
-?>
-
-<div class="row">
-    <div class="col-md-4">
-        <img src="../assets/fortnite/tenor.gif">
-    </div>
-    <div class="col-md-4">
-        <img src="../assets/fortnite/tenor2.gif">
-    </div>
-    <div class="col-md-4">
-        <img src="../assets/fortnite/tenor3.gif">
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-4 offset-5">
-        <form method="post" action="fortnut.php">
-            <input type="hidden" name="pickaxe" value="getit">
-            <input type="submit" value="Get epic pickaxe" class="btn btn-primary btn-lg text-center mt-3 mb-3">
-        </form>
-    </div>
-</div>
+<body class="container text-center ">
+    <h2 class="mt-5">Game has beed reset !</h2>
+    <a href="/RPG" class="btn btn-lg btn-primary">Back to login page</a>
 </body>
-</html>
-

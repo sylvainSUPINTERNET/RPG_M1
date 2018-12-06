@@ -1,4 +1,6 @@
 <?php
+require_once '../autoload.php';
+
         session_start();
         ?>
 
@@ -24,11 +26,9 @@
 <body class="container">
     <?php
 
-        require_once '../autoload.php';
-
-
         //User join new game
         if(isset($_SESSION) && $_POST){
+
             $nickname = $_POST["nickname"];
             $hereo = $_POST["character_choice"];
 
@@ -40,6 +40,7 @@
             echo "BACK ";
             var_dump($_SESSION);
         }
+
 
         ?>
 
@@ -55,30 +56,20 @@
     </section>
 
     <section class="row mt-4">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <p class="text-center">WoW > All</p>
             <a href="./worlds/portal.php">
                 <img src="./assets/doors/portal.jpg" class="img-fluid mt-3" alt="Responsive image">
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <p class="text-center">Fortnite > WoW</p>
             <a href="./worlds/fortnut.php">
                 <img src="./assets/doors/fortnite.jpg" class="img-fluid mt-3" alt="Responsive image">
             </a>
         </div>
-        <div class="col-md-4">
-            <p class="text-center">Naxx 40 <?php if($_SESSION["naxx_access"]) {
-                echo "unlock";
-                } else {
-                echo "(locked, clear 'WoW > All' before)";
-                } ?></p>
-            <img src="./assets/doors/naxx.jpg" class="img-fluid mt-3" alt="Responsive image">
-        </div>
-        <a href=".." class="mt-5 mb-5 btn btn-danger btn-lg"> <i class="fa fa-door-open"></i> Je suis trop faible.</a>
     </section>
-
-
+    <a href="./worlds/reset.php" class="mt-5 mb-5 btn btn-danger btn-lg"> <i class="fa fa-door-open"></i> Too weak ?</a>
 
 </body>
 </html>
