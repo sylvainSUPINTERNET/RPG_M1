@@ -16,7 +16,6 @@ class Skill
     protected $description;
 
 
-
     public function __construct($name, $mana_cost, $effect, $icon, $description)
     {
         $this->name = $name;
@@ -109,7 +108,8 @@ class Skill
 
 
     //check every character turn which skills is available compare with his mana amount
-    static public function checkManaAmount($sessionCharacter, $sessionSkills){
+    static public function checkManaAmount($sessionCharacter, $sessionSkills)
+    {
         $current_char_mana = $sessionCharacter->getMana();
 
         $skill1_mana_cost = $sessionSkills[0]->getManaCost();
@@ -118,19 +118,39 @@ class Skill
 
         $skills_enable = [];
 
-        if($current_char_mana - $skill1_mana_cost >= 0){
-            array_push($skills_enable,0);
+        if ($current_char_mana - $skill1_mana_cost >= 0) {
+            array_push($skills_enable, 0);
         }
 
-        if($current_char_mana - $skill2_mana_cost >= 0){
-            array_push($skills_enable,1);
+        if ($current_char_mana - $skill2_mana_cost >= 0) {
+            array_push($skills_enable, 1);
         }
 
-        if($current_char_mana - $skill3_mana_cost >= 0){
-            array_push($skills_enable,2);
+        if ($current_char_mana - $skill3_mana_cost >= 0) {
+            array_push($skills_enable, 2);
         }
 
         return $skills_enable;
+
+    }
+
+    static public function clearDialog(){
+            Utils::clearDialogSkill();
+    }
+
+
+    static public function dialog($skillManaCost, $currentSkills)
+    {
+        foreach($currentSkills as $skill){
+            if($skill->getManaCost() == $skillManaCost){ // not === skillManaCost is not int !
+                $iconNameFormatted = '../assets/skill/'.$skill->getIcon();
+                $_SESSION["SKILL_DIALOG"] = '
+                    <div class="alert alert-warning">
+                    You cast [' . $skill->getName() . '] for '. $skill->getManaCost().' <i class="fa fa-gem" style="dodgerblue"></i>
+                               <img class="rounded" src="'.$iconNameFormatted.'"/>
+                    </div>';
+            }
+        }
 
     }
 

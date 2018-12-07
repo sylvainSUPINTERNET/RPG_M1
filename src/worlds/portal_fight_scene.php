@@ -56,11 +56,15 @@ $turnManager = new TurnManager(); //default played is false;
 $skills = Skill::checkManaAmount($current_character, $current_skill);
 
 
+
 //turn from skill
 if(isset($_POST["attack_skill"]) && isset($_POST["attack_skill_mana_cost"]) && $_SESSION["attacked"] === false){
     var_dump("kappa");
     $current_character->skillAttack($current_character, $current_boss, $_POST["attack_skill"], $_POST["attack_skill_mana_cost"]);
     $turnManager->charAttacked(); //update user turn
+
+    //set dialog
+    Skill::dialog($_POST["attack_skill_mana_cost"], $current_skill);
 }
 
 
@@ -86,6 +90,7 @@ if (isset($_POST["pass_turn"])) {
     //character dead
     if ($current_character->getHp() <= 0) {
         Spell::clearDialog("ITEMS_PROC_DIALOG");
+        Skill::clearDialog();
         header('Location: dead.php');
     } else if //boss dead
     ($current_boss->getHp() <= 0) {
@@ -94,6 +99,7 @@ if (isset($_POST["pass_turn"])) {
         $_SESSION["ITEM_DROP"] = $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) - 1)];
         $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) - 1)];
         Spell::clearDialog("ITEMS_PROC_DIALOG");
+        Skill::clearDialog();
         header('Location: win.php');
     } else {
 
@@ -104,6 +110,7 @@ if (isset($_POST["pass_turn"])) {
         //reset turn
         $turnManager->bossAttacked();
         Spell::clearDialog("ITEMS_PROC_DIALOG");
+        Skill::clearDialog();
 
     }
 
@@ -147,6 +154,7 @@ if (isset($_POST["pass_turn"])) {
                                             </form>
                                         </div>
                                         <div class="col-md-6">
+                                            <p>cost : <?php echo $_SESSION["skills"][0]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                             <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
                                         </div>
                                     </div>
@@ -162,6 +170,7 @@ if (isset($_POST["pass_turn"])) {
                                             </form>
                                         </div>
                                         <div class="col-md-6">
+                                            <p>cost : <?php echo $_SESSION["skills"][1]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                             <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
                                         </div>
                                     </div>
@@ -176,6 +185,7 @@ if (isset($_POST["pass_turn"])) {
                                             </form>
                                         </div>
                                         <div class="col-md-6">
+                                            <p>cost : <?php echo $_SESSION["skills"][2]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                             <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
                                         </div>
                                     </div>
@@ -197,6 +207,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][0]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -212,6 +223,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][1]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -226,6 +238,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][2]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -246,6 +259,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][0]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -261,6 +275,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][1]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -275,6 +290,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][2]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -296,6 +312,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][0]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -311,6 +328,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][1]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -325,6 +343,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][2]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -346,6 +365,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][0]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -361,6 +381,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][1]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -375,6 +396,7 @@ if (isset($_POST["pass_turn"])) {
                                                     </form>
                                                 </div>
                                                 <div class="col-md-6">
+                                                    <p>cost : <?php echo $_SESSION["skills"][2]->getManaCost()?> <i class="fa fa-gem" style="color:dodgerblue"></i></p>
                                                     <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
                                                 </div>
                                             </div>
@@ -492,6 +514,15 @@ if (isset($_POST["pass_turn"])) {
                     //boss attacked
                 } ?>
             </p>
+
+            <br>
+
+
+            <!-- display spell casted -->
+            <?php
+            if(isset($_SESSION['SKILL_DIALOG']) && $_SESSION['SKILL_DIALOG'] !== ""){
+                echo $_SESSION['SKILL_DIALOG'];
+            } ?>
 
             <br>
             <br>

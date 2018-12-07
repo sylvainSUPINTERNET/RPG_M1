@@ -27,6 +27,9 @@ session_start();
 <body class="container">
 <?php
 
+//clear dialog at init of game (if reset etc ...)
+Skill::clearDialog();
+
 
 //User join new game
 if (isset($_SESSION) && $_POST) {
@@ -46,15 +49,15 @@ if (isset($_SESSION) && $_POST) {
     //init SKILLS
     if ($hereo === "asmongod") {
         $_SESSION["skills"] = [
-            new Skill("heal", 200, "QUICK_HEAL", "asmongold_heal.jpg", "Restore your hp"),
-            new Skill("damage increase", 150, "BONUS_ATK", "asmongold_atk.jpg", "Increase your damage"),
-            new Skill("ultimate", 500, "ULTIMATE", "asmongold_ultimate.jpg", "Special attack"),
+            new Skill("damage increase", 150, "BONUS_ATK", "asmongold_atk.jpg", "Increase your damage by 10"),
+            new Skill("heal", 200, "QUICK_HEAL", "asmongold_heal.jpg", "Heal 150 HP"),
+            new Skill("ultimate", 500, "ULTIMATE", "asmongold_ultimate.jpg", "Ultimate, deals 400 damage, increase your damage by 250 and heal 250"),
         ];
     } elseif ($hereo === "leeroy") {
         $_SESSION["skills"] = [
-            new Skill("heal", 200, "QUICK_HEAL", "leeroy_heal.jpg", "Restore your hp"),
-            new Skill("damage increase", 150, "BONUS_ATK", "leeroy_atk.jpg", "Increase your damage"),
-            new Skill("ultimate", 500, "ULTIMATE", "leeroy_ultimate.jpg", "Special attack"),
+            new Skill("damage increase", 150, "BONUS_ATK", "leeroy_atk.jpg", "Increase your damage by 10"),
+            new Skill("heal", 200, "QUICK_HEAL", "leeroy_heal.jpg", "Heal 150 HP"),
+            new Skill("ultimate", 500, "ULTIMATE", "leeroy_ultimate.jpg", "Ultimate, deals 400 damage, increase your damage by 250 and heal 250"),
         ];
     }
 

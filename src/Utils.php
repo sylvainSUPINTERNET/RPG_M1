@@ -36,6 +36,12 @@ class Utils
         }
     }
 
+    public static function clearDialogSkill()
+    {
+        if(isset($_SESSION["SKILL_DIALOG"])){
+            $_SESSION["SKILL_DIALOG"] = "";
+        }
+    }
 
 
 }
