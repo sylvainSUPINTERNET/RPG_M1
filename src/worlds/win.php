@@ -2,7 +2,10 @@
 require_once '../../autoload.php';
 session_start();
 
-var_dump($_SESSION["character"]);
+$current_gold = $_SESSION['character']->getGold();
+//get gold of boss
+$_SESSION['character']->setGold($current_gold + $_SESSION['boss']->getGold());
+
 ?>
 
 <!doctype html>
@@ -26,34 +29,36 @@ var_dump($_SESSION["character"]);
           integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 </head>
 
-<body class="container">
+<body class="container text-center">
 
-<h2 class="text-center mt-4">GG, <?php echo $_SESSION["boss"]->getHereo() . " has been defeated."?></h2>
+<h2 class="text-center mt-4">GG, <?php echo $_SESSION["boss"]->getHereo() . " has been defeated." ?></h2>
+<p class="text-center">Gold collected : +<?php echo $_SESSION['boss']->getGold() . ' ('. $_SESSION['character']->getGold() .')'?> <i class="fa fa-coins" style="color:orange;"></i></p>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
+
         <?php
-        if($_SESSION["ITEM_DROP"]->getQuality() === "green"){ ?>
+        if ($_SESSION["ITEM_DROP"]->getQuality() === "green") { ?>
             <h3 style="color: limegreen;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
             <?php
-        }?>
+        } ?>
 
         <?php
-        if($_SESSION["ITEM_DROP"]->getQuality() === "blue"){ ?>
+        if ($_SESSION["ITEM_DROP"]->getQuality() === "blue") { ?>
             <h3 style="color: royalblue;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
             <?php
-        }?>
+        } ?>
 
         <?php
-        if($_SESSION["ITEM_DROP"]->getQuality() === "purple"){ ?>
+        if ($_SESSION["ITEM_DROP"]->getQuality() === "purple") { ?>
             <h3 style="color: rebeccapurple;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
             <?php
-        }?>
+        } ?>
 
         <?php
-        if($_SESSION["ITEM_DROP"]->getQuality() === "orange"){ ?>
+        if ($_SESSION["ITEM_DROP"]->getQuality() === "orange") { ?>
             <h3 style="color: orange;" class="mb-2 mt-2">[ <?php echo $_SESSION["ITEM_DROP"]->getName() ?>]</h3>
             <?php
-        }?>
+        } ?>
         <div class="row">
             <div class="col-md-12">
                 <img src="<?php echo $_SESSION["ITEM_DROP"]->getItemIconName() ?>">
@@ -67,23 +72,59 @@ var_dump($_SESSION["character"]);
                 Bonus :
                 <img src="<?php echo $_SESSION["ITEM_DROP"]->getStatSpecialIcon() ?>">
                 <strong><?php echo $_SESSION["ITEM_DROP"]->getStatSpecial() ?></strong>
+                <br>
+                <br>
+                <p>item price : <?php echo $_SESSION["ITEM_DROP"]->getGold() ?>g <i style="color: darkorange"
+                                                                       class="fa fa-coins"></i></p>
             </div>
+        </div>
     </div>
 
-        <br>
+    <div class="row">
+        <div class="col-md-12">
+            <?php
+
+            $alreayItem = false;
+
+            if (isset($_SESSION['inventory']) && !empty($_SESSION['inventory'])) {
+                foreach ($_SESSION['inventory'] as $item) {
+                    if ($item->getName() === $_SESSION["ITEM_DROP"]->getName()) {
+                        $alreayItem = true;
+                    }
+                }
+            }
+
+            if ($alreayItem)
+            {
+                ?>
+                <?php
+                $current_gold = $_SESSION['character']->getGold();
+                $item_price =  $_SESSION["ITEM_DROP"]->getGold();
+                $_SESSION['character']->setGold($current_gold + $item_price);
+
+                ?>
+                <br>
+                <div class="mb-5">
+                    <p>Item sold for <?php echo $_SESSION["ITEM_DROP"]->getGold() ?>g, you already have this item ! <br><a
+                                href="./market.php">Spend my <?php echo $_SESSION['character']->getGold() ?> gold</a></p>
+                </div>
+                <?php
+            } else {
+                $inventory = new Inventory();
+                $inventory->addItem($_SESSION["ITEM_DROP"]);
+            }
+
+            //reset buff activated to update stats for next fight
+            $_SESSION["character"]->setBuffActivated(false);
+
+            ?>
+        </div>
+
         <div class="mt-5">
             <a href="../start.php" class="btn btn-primary btn-lg"> Go back to wolrd selection</a>
             <a href="reset.php" class="btn btn-danger btn-lg"> Reset the game</a>
         </div>
-</div>
-
-    <?php
-        $inventory = new Inventory();
-        $inventory->addItem($_SESSION["ITEM_DROP"]);
-
-        //reset buff activated to update stats for next fight
-        $_SESSION["character"]->setBuffActivated(false);
-        ?>
+    </div>
 
 </body>
 </html>

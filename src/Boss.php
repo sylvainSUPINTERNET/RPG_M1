@@ -12,11 +12,11 @@ class Boss extends CharacterChar
 
 
 
-    public function __construct($nickname, $hereo, $atk, $hp, $pic_name, $mana)
+    public function __construct($nickname, $hereo, $atk, $hp, $pic_name, $mana, $gold)
     {
         $this->pic_name = $pic_name;
 
-        parent::__construct($nickname, $hereo, $atk, $hp, $mana);
+        parent::__construct($nickname, $hereo, $atk, $hp, $mana, $gold);
     }
 
 

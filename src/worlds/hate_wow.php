@@ -19,7 +19,7 @@ session_destroy();
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>RPG | JOLY SYLVAIN</title>
+    <title>I Hate WoW</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -34,6 +34,6 @@ session_destroy();
 </head>
 
 <body class="container text-center ">
-    <h2 class="mt-5">Game has been reset !</h2>
+    <h2 class="mt-5">Ok, cya !</h2>
     <a href="/RPG" class="btn btn-lg btn-primary">Back to login page</a>
 </body>

@@ -1,9 +1,6 @@
 <?php
 session_start();
 
-var_dump($_SESSION);
-
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -26,7 +23,7 @@ var_dump($_SESSION);
 <body class="container">
     <h1 class="text-center mt-3">RPG made by Joly Sylvain </h1>
     <section class="mt-4">
-        <h3> Choose your character</h3>
+        <h3> List of characters</h3>
 
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="false">
             <ol class="carousel-indicators">

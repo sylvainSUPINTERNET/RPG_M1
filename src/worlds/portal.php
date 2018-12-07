@@ -26,72 +26,13 @@ session_start();
 </head>
 
 <?php
-
-
-$raid = new Raid("Portal");
-
-$item_1 = new Item("Portal Sword", 2, 1, "Critical strike", "portal_sword.jpg", "critical_strike.jpg", 0, "green", 'CRIT damage * 2  <i class=\\"fa fa-bolt\\"
-                                   style=\\"color:yellow\\"></i>');
-$item_2 = new Item("Portal Armor", 3, 1, "Heal", "portal_armor.jpg","heal.jpg", 0, "green", " +50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_3 = new Item("Portal Gantlet", 1, 5, "Heal", "portal_gantlet.jpg","health.jpg", 0,"blue","+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_4 = new Item("Cool Mount", 5, 5, "Cool Boi", "portal_mount.jpg","cool_boy.jpg", 0,"purple", "CoOl boI +50 <i class=\"fa fa-fist-raised\"
-                                   style=\"color:dimgrey\"></i>");
-$item_5 = new Item("Portal Cool Sword", 25, 2, "Critical strike", "portal_cool_sword.jpg","increase_damage.jpg", 0, "purple", "CRIT damage * 2  <i class=\\\"fa fa-bolt\\\"
-                                   style=\\\"color:yellow\\\"></i>");
-$item_6 = new Item("Portal helmet", 1, 10, "Heal", "portal_helmet.jpg","tanky.jpg", 0, "blue","+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_7 = new Item("Portal Legging", 3, 4, "Heal", "portal_legging.jpg","tanky.jpg", 0, "blue","+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_8 = new Item("Portal Necklace", 3, 3, "Heal", "portal_necklace.jpg","heal.jpg", 0, "green","+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_9 = new Item("Portal Ring", 5, 1, "Heal", "portal_ring.jpg","health.jpg", 0, "purple", "+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_10 = new Item("Portal Boots", 2, 7, "Heal", "portal_boots.jpg","health.jpg", 0, "green", "+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_11 = new Item("Portal Trinket", 1, 1, "Critical strike", "portal_trinket.jpg","critical_strike.jpg", 0, "blue", "CRIT damage * 2  <i class=\\\"fa fa-bolt\\\"
-                                   style=\\\"color:yellow\\\"></i>");
-$item_12 = new Item("Portal Cloack", 3, 5, "Heal", "portal_cloack.jpg","extra_mana.jpg", 100, "purple", "+50 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
-$item_13 = new Item("Portal Hammer", 35, 2, "Fire damage", "portal_hammer.jpg","firing.jpg", 100,"orange", "Ragnaros * BY FIRE BE PURGED! <i class=\"fa fa-fire\"
-                                   style=\"color:orangered\"></i>");
-$item_14 = new Item("WoW was better before",  100, 150, "Kungen > all", "portal_kungen.jpg","pet_attack.jpg", 300, "purple","* Kungen * Actually, WoW is casu af");
-$item_15 = new Item("Portal Best Sword WORLD",  200, 200, "1/2 God", "portal_very_cool_sword.jpg","thunder.jpg", 200, "orange", "Thunder strikes <i class=\"fa fa-wind\"
-                                   style=\"color:lightblue\"></i>");
-$item_16 = new Item("Portal God's mount",  10000, 10000, "Godlike", "portal_mount2.jpg","GODLIKE.jpg", 1000,"orange", " G O D  <i class=\"fa fa-praying-hands\"
-                                   style=\"color:deeppink\"></i>");
-$item_17 = new Item("Sco The Pet",  400, 400, "Sco > Kungen", "portal_sco.jpg","pet_attack.jpg", 300, "purple", " 1st world G'huun");
-
-
-$raid->setTableItems([
-    $item_1,
-    $item_2,
-    $item_3,
-    $item_4,
-    $item_5,
-    $item_6,
-    $item_7,
-    $item_8,
-    $item_9,
-    $item_10,
-    $item_11,
-    $item_12,
-    $item_13,
-    $item_14,
-    $item_15,
-    $item_16,
-    $item_17,
-]);
-
-$_SESSION['raid'] = $raid;
-
+$raid = $_SESSION['raid'];
 
 //PREPARE boss
 $boss_tables  = [
-    $boss1 =  new Boss("KT", "Kel'Thuzad",100, 90000,"kelthuzad.jpg", 500),
-    $boss2 =  new Boss("Illidan", "Illidan",90, 90000,"illidan.jpg", 0),
-    $boss3 =  new Boss("Arthas", "Arthas",250, 90000,"arthas.jpg", 0)
+    $boss1 =  new Boss("KT", "Kel'Thuzad",100, 2500,"kelthuzad.jpg", 500, 150),
+    $boss2 =  new Boss("Illidan", "Illidan",90, 2000,"illidan.jpg", 50, 90),
+    $boss3 =  new Boss("Arthas", "Arthas",250, 3000,"arthas.jpg", 100, 300)
 ];
 
 $rand = Utils::getRandom(0, sizeof($boss_tables) - 1);
@@ -119,7 +60,7 @@ $_SESSION["boss"] = $boss_tables[$rand]; //init boss
     <?php
     foreach ($raid->getTableItems() as $item) {
     ?>
-    <div class="col-md-4">
+    <div class="col-md-2">
         <div class="text-center">
             <?php
                 if($item->getQuality() === "green"){ ?>
@@ -188,6 +129,7 @@ $_SESSION["boss"] = $boss_tables[$rand]; //init boss
                 </p>
             </div>
         </div>
+        <p class="text-center"><?php echo $item->getGold();?>g <i class="fa fa-coins" style="color:darkorange"></i></p>
         <div class="row">
             <div class="col-md-12 text-center">
                 <h5 class="text-center">Buff</h5>
@@ -205,7 +147,7 @@ $_SESSION["boss"] = $boss_tables[$rand]; //init boss
 
 
 <div class="mb-4">
-    <a href="../start.php" class="btn btn-large">Go back</a>
+    <a href="../start.php" class="btn btn-lg btn-primary">Go back</a>
     <a href="./portal_fight_scene.php" class="btn btn-success btn-lg">Start new game</a>
 </div>
 

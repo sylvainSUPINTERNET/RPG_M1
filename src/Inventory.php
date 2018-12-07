@@ -11,6 +11,7 @@ class Inventory
 
     protected $inventory; // array of Items object
 
+
     public function __construct()
     {
         $this->initInventory();

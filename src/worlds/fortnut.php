@@ -30,12 +30,12 @@ session_start();
 <?php
 
 $item_1 = new Item("PickAxe", 20, 20, "Let's BUILD", "fortnite_pickaxe.jpg", "cool_boy.jpg", 10, "purple", "+40 <i class=\"fa fa-heart\"
-                                   style=\"color:darkred\"></i>");
+                                   style=\"color:darkred\"></i>", 5);
 
 if(isset($_POST["pickaxe"])){
     $inventory = new Inventory();
     $inventory->addItem($item_1);
-    header('Location: ../start.php');
+    echo '<p class="alert alert-danger text-center">* dance * You get a new PICKAXE !</p>';
 }
 
 
@@ -56,8 +56,11 @@ if(isset($_POST["pickaxe"])){
     <div class="col-md-4 offset-5">
         <form method="post" action="fortnut.php">
             <input type="hidden" name="pickaxe" value="getit">
-            <input type="submit" value="Get epic pickaxe" class="btn btn-primary btn-lg text-center mt-3 mb-3">
+            <input type="submit" value="So, get your EPIC pickaxe" class="btn btn-primary btn-lg text-center mt-3 mb-3">
         </form>
+    </div>
+    <div class="col-md-6">
+        <a href="../start.php" class="btn btn-md btn-primary mb-3">Go back</a>
     </div>
 </div>
 </body>

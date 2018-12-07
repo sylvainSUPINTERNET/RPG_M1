@@ -42,14 +42,12 @@ class Spell
                 break;
         }
 
-        var_dump("MAKE ITEM PROC DIALOG",$layout);
         return $layout;
     }
 
     //when attack and user got items, proc of buff dialog AND effect
     static function makeProcEffect($statSpecial, $sessionAttaquant, $sessionTarget, $item)
     {
-        var_dump($statSpecial);
 
         //switch on dialog and set the SESSION to corresponding
         //Check before use dont spam refresh to get buff
@@ -147,10 +145,6 @@ class Spell
 
         $rand = Utils::getRandom(0, 1);
 
-
-        var_dump("BOSS RANDOM SPELL");
-        var_dump($sessionBoss->getMana());
-
         if($sessionBoss->getMana() >= Utils::mostExpensiveBossSpell()){
             if($sessionBoss->getHereo() === "Kel'Thuzad"){
                 $SPELLS_KT[$rand];
@@ -176,11 +170,6 @@ class Spell
                 $remainMana = $sessionBoss->getMana() - $spell_mana;
                 $sessionBoss->setMana($remainMana);
 
-                var_dump("CAST ? => ", $_SESSION["SPELL_BOSS_CAST"]["name"]);
-                var_dump("MANA COST ? => ", $_SESSION["SPELL_BOSS_CAST"]["mana_cost"]);
-                var_dump("BOSS MANA REMAINS",$sessionBoss->getMana());
-
-
             } else if($sessionBoss->getHereo() === "Arthas"){
                 $SPELLS_ARTHAS[$rand];
                 $spell_name = $SPELLS_ARTHAS[$rand][0];
@@ -203,10 +192,6 @@ class Spell
                 //mana cost
                 $remainMana = $sessionBoss->getMana() - $spell_mana;
                 $sessionBoss->setMana($remainMana);
-
-                var_dump("CAST ? => ", $_SESSION["SPELL_BOSS_CAST"]["name"]);
-                var_dump("MANA COST ? => ", $_SESSION["SPELL_BOSS_CAST"]["mana_cost"]);
-                var_dump("BOSS MANA REMAINS",$sessionBoss->getMana());
 
 
             }else{
@@ -231,9 +216,6 @@ class Spell
                 //mana cost
                 $remainMana = $sessionBoss->getMana() - $spell_mana;
                 $sessionBoss->setMana($remainMana);
-                var_dump("CAST ? => ", $_SESSION["SPELL_BOSS_CAST"]["name"]);
-                var_dump("MANA COST ? => ", $_SESSION["SPELL_BOSS_CAST"]["mana_cost"]);
-                var_dump("BOSS MANA REMAINS",$sessionBoss->getMana());
 
 
             }
@@ -244,11 +226,8 @@ class Spell
     static public function charSpell($sessionUser, $sessionBoss)
     {
         if ($sessionUser->getHereo() === "asmongod") {
-            var_dump("ASMONGOD");
-            var_dump("current user mana for spell -> ", $sessionUser->getMana());
+
         } else if ($sessionUser->getHereo() === "leeroy") {
-            var_dump("LEEROY");
-            var_dump("current user mana for spell -> ", $sessionUser->getMana());
         }
     }
 

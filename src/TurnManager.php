@@ -24,8 +24,6 @@ class TurnManager
 
         $this->setPlayed(true);
         $_SESSION["attacked"] = $this->isPlayed();
-        var_dump("  ATTACKED");
-        var_dump($_SESSION["attacked"]);
     }
 
     public function bossAttacked(){

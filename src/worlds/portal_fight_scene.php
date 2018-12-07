@@ -31,11 +31,6 @@ session_start();
 //$current_boss = CharacterChar::unseralizeSession($_SESSION["current_boss"]);
 //$current_character = CharacterChar::unseralizeSession($_SESSION["current_character"]);
 
-
-
-
-
-
 $current_boss = $_SESSION["boss"];
 $current_character = $_SESSION["character"];
 $current_skill = $_SESSION["skills"];
@@ -59,7 +54,6 @@ $skills = Skill::checkManaAmount($current_character, $current_skill);
 
 //turn from skill
 if(isset($_POST["attack_skill"]) && isset($_POST["attack_skill_mana_cost"]) && $_SESSION["attacked"] === false){
-    var_dump("kappa");
     $current_character->skillAttack($current_character, $current_boss, $_POST["attack_skill"], $_POST["attack_skill_mana_cost"]);
     $turnManager->charAttacked(); //update user turn
 

@@ -25,6 +25,8 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     protected $base_hp;
     protected $base_mana;
 
+    protected $gold;
+
     protected $game_session;
     protected $hereo_pic_path;
 
@@ -46,7 +48,7 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     ];
 
 
-    public function __construct($nickname, $hereo, $atk, $hp, $mana)
+    public function __construct($nickname, $hereo, $atk, $hp, $mana, $gold)
 
     {
 
@@ -56,6 +58,7 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
         $this->setAtk($atk);
         $this->setHp($hp);
         $this->setMana($mana);
+        $this->setGold($gold);
 
         $this->setBaseAtk($atk);
         $this->setBaseHp($hp);
@@ -140,9 +143,9 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     {
         if ($hereo === "asmongod") {
             $this->quotes["asmongod"] = [
-                "The fuck is that",
-                "THATS NOT POSSIBLE",
-                "Fuckin idiot, get out of here"
+                "Dofus vanilla > All",
+                "JS > Php",
+                "gg wp ez"
             ];
         } else if ($hereo === "leeroy") {
             $this->quotes["leeroy"] = [
@@ -154,13 +157,13 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
             $this->quotes["Kel'Thuzad"] = [
                 "Glory to the Lich King!",
                 "Pray for mercy!",
-                "I shall return..."
+                "Asmon the casu..."
             ];
         } else if ($hereo === "Illidan") {
             $this->quotes["Illidan"] = [
                 "I feel only hatred.",
                 "Let's move out.",
-                "At last."
+                "yasuo = -3 lp"
             ];
         } else if ($hereo === "Arthas") {
             $this->quotes["Arthas"] = [
@@ -437,6 +440,51 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     public function setRegenManaRatio($regen_mana_ratio)
     {
         $this->regen_mana_ratio = $regen_mana_ratio;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGold()
+    {
+        return $this->gold;
+    }
+
+    /**
+     * @param mixed $gold
+     */
+    public function setGold($gold)
+    {
+        $this->gold = $gold;
+    }
+
+    public function pay($item, $invArr){
+
+        $duplicate = false;
+        foreach($_SESSION['inventory'] as $inv_item){
+            if($inv_item->getName() === $item->getName()){
+                $duplicate = true;
+                echo "<p class='alert alert-danger'>Sorry, you already have this item </p>";
+                break;
+            }
+        }
+
+        if(!$duplicate){
+            $userGold = $_SESSION['character']->getGold();
+            $item_price = $item->getGold();
+            $diff = $userGold - $item_price;
+
+
+            if($diff < 0){
+                echo "<p class='alert alert-danger'>Not enough gold for this.</p>";
+            } else {
+                array_push($invArr,$item);
+                $_SESSION['inventory'] = $invArr;
+                $_SESSION['character']->setGold($diff);
+            }
+
+        }
+
     }
 
 }

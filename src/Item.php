@@ -25,7 +25,10 @@ class Item {
     protected $stat_special = "";
     protected $stat_special_icon = "";
 
-    public function __construct($name, $stat_atk, $stat_health,$stat_special, $icon_name, $stat_special_icon_name, $stat_mana, $quality, $item_buff_proc_dialog)
+
+    protected $gold = 0;
+
+    public function __construct($name, $stat_atk, $stat_health,$stat_special, $icon_name, $stat_special_icon_name, $stat_mana, $quality, $item_buff_proc_dialog, $price)
     {
         $this->name = $name;
         $this->stat_atk = $stat_atk;
@@ -38,6 +41,9 @@ class Item {
         $this->quality = $quality;
 
         $this->item_buff_proc_dialog = $item_buff_proc_dialog;
+
+
+        $this->gold = $price;
     }
 
 
@@ -185,6 +191,22 @@ class Item {
     public function setItemBuffProcDialog($item_buff_proc_dialog)
     {
         $this->item_buff_proc_dialog = $item_buff_proc_dialog;
+    }
+
+    /**
+     * @return int
+     */
+    public function getGold()
+    {
+        return $this->gold;
+    }
+
+    /**
+     * @param int $gold
+     */
+    public function setGold($gold)
+    {
+        $this->gold = $gold;
     }
 
 
