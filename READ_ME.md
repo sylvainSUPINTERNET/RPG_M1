@@ -18,7 +18,7 @@ __Welcom on my mini RPG game__
    
 ## Features
 
-####Character
+__Character__
 <ul>
 <li>
    Select character
@@ -46,7 +46,7 @@ __Welcom on my mini RPG game__
 </li>
 </ul>
 
-####World
+__World__
 <ul>
 <li>
    Auction house (market / gold system) 
@@ -77,7 +77,7 @@ __Welcom on my mini RPG game__
 </li>
 </ul>
 
-####Boss
+__Boss__
 <ul>
 <li>
    3 boss
@@ -100,7 +100,7 @@ __Welcom on my mini RPG game__
 </ul>
 
 
-####Fight
+__Fight__
 <ul>
 <li>
    Round by round
@@ -126,7 +126,7 @@ __Welcom on my mini RPG game__
 </ul>
 
 
-###Items
+__Items__
 <ul>
 <li>
    Boss dropping
