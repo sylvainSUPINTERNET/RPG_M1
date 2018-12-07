@@ -134,7 +134,7 @@ $_SESSION['raid'] = $raid;
 
         <div class="row mt-5">
             <div class="col-md-6">
-                <img class="rounded" src="<?php echo $_SESSION["character"]->getHereoPic() ?>" class="img-fluid mt-3" alt="Responsive image">
+                <img src="<?php echo $_SESSION["character"]->getHereoPic() ?>" class="img-fluid mt-3 rounded" alt="Responsive image">
                 <blockquote class="mt-3">
                     <?php echo '" ' . $_SESSION["character"]->getQuotes()[$_SESSION["character"]->getHereo()][0] . ' "' ?>
                     <br>
