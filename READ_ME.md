@@ -13,7 +13,7 @@ __Welcom on my mini RPG game__
         $ git clone https://github.com/sylvainSUPINTERNET/RPG_M1.git
         
    
-   __Important : Move this project into your local server, then rename the root folder RPG__
+   __Important : Move this project into your local server, then rename the root folder <code>RPG_M1</code> to <code>RPG</code>
    
    
 ## Features
