@@ -18,6 +18,7 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     protected $atk;
     protected $hp;
     protected $mana;
+    protected $regen_mana_ratio = 50; // +50 each turns
 
     //for calcul stats via items
     protected $base_atk;
@@ -192,12 +193,13 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
 
     public function regenMana()
     {
-        $this->mana += 50;
+        $ratio = $this->getRegenManaRatio();
+        $this->mana += $ratio;
     }
 
 
     //abstract ActionChar.php
-    public function attack($sessionAttaquant, $sessionTarget) //pass session
+    public function attack($sessionAttaquant, $sessionTarget, $typeAttaquant) //pass session
     {
 
         $a_atk = $sessionAttaquant->getAtk();
@@ -206,38 +208,77 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
 
 
         //if user has items
-        if (isset($_SESSION['inventory']) && sizeof($_SESSION['inventory']) > 0) {
+        if (isset($_SESSION['inventory']) && sizeof($_SESSION['inventory']) > 0 && $typeAttaquant !== "boss") {
             $this->specialAttack($sessionAttaquant, $sessionTarget); //apply random buff from his items list
         }
 
 
         $this->regenMana();
-
-
-        //TODO -> creer 2 3 spells pour les boss (cooldown + mana points)
-        //TODO -> creer 2 3 spells pour le perso (cooldown + mana points)
-        //TODO -> corriger la regen mana + coup des spells non respecté par les boss
-        //TODO -> corriger le bug si vie negative on arrete le jeu on laisse pas un tour supp pour rien
-        // TODO -> pour le mana faire un calcul et faire le if sur ce calcul genre pas faire < 1OO mais checke si le calcul du mana restant est bien > ou = 0
-        //TODO -> clear TODO + var_dump
-
     }
 
 
     //call only if the character has items with damage buff
     function specialAttack($attaquant, $target)
     { //pass session
-        $all_dialog = [];
+        $stat_special = [];
         foreach ($_SESSION['inventory'] as $item) {
-            array_push($all_dialog, $item->getItemBuffProcDialog());
+            array_push($stat_special, $item->getStatSpecial());
         }
-        $rand = Utils::getRandom(0, sizeof($all_dialog) - 1);
+        $rand = Utils::getRandom(0, sizeof($stat_special) - 1);
 
-        Spell::makeProcEffect($all_dialog[$rand], $attaquant, $target);
+        Spell::makeProcEffect($stat_special[$rand], $attaquant, $target, $item);
     }
 
 
-    //TODO implement system de sauvegarde
+    function skillAttack($attaquant, $target, $skill_effect, $manaCost)
+    {
+
+        switch ($skill_effect) {
+            case 'QUICK_HEAL':
+                $current_hp = $attaquant->getHp();
+                $current_mana = $attaquant->getMana();
+
+                $heal_amount = 150;
+                $attaquant->setHp($current_hp + $heal_amount);
+
+                $attaquant->setMana($current_mana - $manaCost);
+                break;
+            case 'BONUS_ATK':
+                $current_atk = $attaquant->getAtk();
+                $current_mana = $attaquant->getMana();
+
+                $atk_bonus = 10;
+                $attaquant->setAtk($current_atk + $atk_bonus);
+
+                $attaquant->setMana($current_mana - $manaCost);
+
+                break;
+            case 'ULTIMATE':
+                $dmg_bonus = 250;
+                $hp_bonus = 250;
+                $current_hp = $attaquant->getHp();
+                $current_atk = $attaquant->getAtk();
+                $current_mana = $attaquant->getMana();
+
+                $target_current_hp = $target->getHp();
+
+
+                $attaquant->setHp($current_hp + $hp_bonus);
+                $attaquant->setAtk($current_atk + $dmg_bonus);
+
+                $target->setHp($target_current_hp - 400);
+
+                $attaquant->setMana($current_mana - $manaCost);
+                break;
+            default:
+                break;
+        }
+
+
+        $this->regenMana();
+    }
+
+
     public function saveGameSession()
     {
         $save = serialize($_SESSION);
@@ -247,7 +288,6 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     public function setSave($saveSerialize)
     {
     }
-    // todo
 
     /**
      * @return mixed
@@ -381,6 +421,22 @@ class CharacterChar extends ActionChar implements ICharacter, IDialog
     public function setBaseMana($base_mana)
     {
         $this->base_mana = $base_mana;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRegenManaRatio()
+    {
+        return $this->regen_mana_ratio;
+    }
+
+    /**
+     * @param int $regen_mana_ratio
+     */
+    public function setRegenManaRatio($regen_mana_ratio)
+    {
+        $this->regen_mana_ratio = $regen_mana_ratio;
     }
 
 }

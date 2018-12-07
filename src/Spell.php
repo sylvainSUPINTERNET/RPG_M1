@@ -14,73 +14,113 @@ class Spell
     }
 
 
-    //when attack and user got items, proc of buff
-    static function makeProcEffect($dialogProc, $sessionAttaquant, $sessionTarget)
+    //return text dialog in alert for item proc effet / bonus
+    static function makeItemProcDialogLayout($item){
+        $layout = "";
+
+        $qt = $item->getQuality();
+        switch ($qt){
+            case "green":
+                $layout = '<span style="color: limegreen;" class="mb-2 mt-2">['. $item->getName() .']</span><br><span>'.$item->getStatSpecial() . ' : '. $item->getItemBuffProcDialog() .'
+                </span>';
+                break;
+            case "blue":
+                $layout = '<span style="color: royalblue;" class="mb-2 mt-2">['. $item->getName() .']</span><br><span>'.$item->getStatSpecial(). ' : '. $item->getItemBuffProcDialog() .'
+                </span>';
+                break;
+            case "purple":
+                $layout = '<span style="color: rebeccapurple;" class="mb-2 mt-2">['. $item->getName() .']</span><br><span>'.$item->getStatSpecial(). ' : '. $item->getItemBuffProcDialog().'
+                </span>';
+                break;
+            case "orange":
+                $layout = '<span style="color: orange;" class="mb-2 mt-2">['. $item->getName() .']</span><br><span>'.$item->getStatSpecial(). ' : '. $item->getItemBuffProcDialog().'
+                </span>';
+                break;
+            default:
+                $layout = '<span style="color: black;" class="mb-2 mt-2">['. $item->getName() .']</span><br><span>'.$item->getStatSpecial(). ' : '. $item->getItemBuffProcDialog() .'
+                </span>';
+                break;
+        }
+
+        var_dump("MAKE ITEM PROC DIALOG",$layout);
+        return $layout;
+    }
+
+    //when attack and user got items, proc of buff dialog AND effect
+    static function makeProcEffect($statSpecial, $sessionAttaquant, $sessionTarget, $item)
     {
+        var_dump($statSpecial);
 
         //switch on dialog and set the SESSION to corresponding
         //Check before use dont spam refresh to get buff
 
-        switch ($dialogProc) {
-            case "Critical strike ! ":
+        switch ($statSpecial) {
+            case "Critical strike":
                 $a_atk = $sessionAttaquant->getAtk() * 2;
                 $t_hp = $sessionTarget->getHp();
                 $sessionTarget->setHp($t_hp - $a_atk);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "Critical strike !";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
             case "B U I L D":
                 $bonus_hp = $sessionAttaquant->getHp() + 40;
                 $sessionAttaquant->setHp($bonus_hp);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "BUILD WALL";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case "Get heal !":
+            case "Heal":
                 $heal = $sessionAttaquant->getHp() + 50;
                 $sessionAttaquant->setHp($heal);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "Get heal !";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case "You are too cool !":
+            case "Cool Boi":
                 $heal = $sessionAttaquant->getHp() + 50;
                 $dmg_boost = $sessionAttaquant->getBaseAtk() + 50 + $sessionAttaquant->getAtk();
 
-                $sessionAttaquant->setHealth($heal);
+                $sessionAttaquant->setHp($heal);
                 $sessionAttaquant->setAtk($dmg_boost);
 
-                $_SESSION["ITEMS_PROC_DIALOG"] = "You are too cool, damage boosted !";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case 'Ragnaros : BY FIRE BE PURGED!':
+            case 'Fire damage':
                 $dmg_boost = $sessionAttaquant->getBaseAtk() + 25 + $sessionAttaquant->getAtk();
                 $sessionAttaquant->setAtk($dmg_boost);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "* Ragnaros * BY FIRE BE PURGED!";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case 'WoW = casu':
+            case 'Kungen > all':
                 $dmg_boost = $sessionAttaquant->getBaseAtk() + 30 + $sessionAttaquant->getAtk();
                 $health_boost = $sessionAttaquant->getHpBase() + 30 + $sessionAttaquant->getHp();
 
                 $sessionAttaquant->setAtk($dmg_boost);
                 $sessionAttaquant->setHp($health_boost);
-
-                $_SESSION["ITEMS_PROC_DIALOG"] = "* Kungen * Actually, WoW is casu af";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case 'Thunder strike !':
+            case '1/2 God':
                 $dmg_boost_op = $sessionAttaquant->getAtk() + 30;
                 $sessionAttaquant->setAtk($dmg_boost_op);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "Thunder strike !";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case 'G O D':
+            case 'Godlike':
                 $dmg_boost_op = $sessionAttaquant->getAtk() + 100;
                 $sessionAttaquant->setAtk($dmg_boost_op);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "G O D";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
-            case '1st world G\'huun.':
+            case 'Sco > Kungen':
                 $dmg_boost_op = $sessionAttaquant->getAtk() + 50;
                 $dmg_health_op = $sessionAttaquant->getHp() + 50;
                 $sessionAttaquant->setAtk($dmg_boost_op);
                 $sessionAttaquant->setHp($dmg_health_op);
-                $_SESSION["ITEMS_PROC_DIALOG"] = "1st world G'huun.";
+                $_SESSION["ITEMS_PROC_DIALOG"] = Spell::makeItemProcDialogLayout($item);
                 break;
             default:
                 $_SESSION["ITEMS_PROC_DIALOG"] = "";
                 break;
+        }
+    }
+
+    static public function clearDialog($type){
+        if($type === "ITEMS_PROC_DIALOG"){
+            Utils::clearDialogProcItemChar();
+        } elseif ($type = "SPELL_BOSS_CAST") {
+            Utils::clearDialogBossSpell();
         }
     }
 
@@ -91,26 +131,27 @@ class Spell
     {
 
         $SPELLS_KT = [
-            0 => ["frost bolt", "//icon path", 250, 250],
-            1 => ["frost cage", "//icon path", 60, 200],
+            0 => ["frost bolt", "../assets/boss_spell/frost_bolt.jpg", 250, 250],
+            1 => ["frost cage", "../assets/boss_spell/frost_cage.jpg", 60, 200],
         ];
 
         $SPELLS_ARTHAS = [
-            0 => ["infested", "//icon path", 500, 200],
-            1 => ["blood pact", "//icon path", 90, 150],
+            0 => ["infested", "../assets/boss_spell/infested.jpg", 500, 200],
+            1 => ["blood pact", "../assets/boss_spell/blood_pact.jpg", 90, 150],
         ];
 
         $SPELLS_ILLIDAN = [
-            0 => ["azzinoth flames", "//icon path", 150, 250],
-            1 => ["furry", "//icon path", 40, 200],
+            0 => ["azzinoth flames", "../assets/boss_spell/azzinoth_flames.jpg", 150, 250],
+            1 => ["fury", "../assets/boss_spell/fury.jpg", 40, 200],
         ];
 
         $rand = Utils::getRandom(0, 1);
 
+
         var_dump("BOSS RANDOM SPELL");
         var_dump($sessionBoss->getMana());
 
-        if($sessionBoss->getMana() >= 100){
+        if($sessionBoss->getMana() >= Utils::mostExpensiveBossSpell()){
             if($sessionBoss->getHereo() === "Kel'Thuzad"){
                 $SPELLS_KT[$rand];
                 $spell_name = $SPELLS_KT[$rand][0];
@@ -199,6 +240,7 @@ class Spell
         }
     }
 
+
     static public function charSpell($sessionUser, $sessionBoss)
     {
         if ($sessionUser->getHereo() === "asmongod") {
@@ -209,5 +251,7 @@ class Spell
             var_dump("current user mana for spell -> ", $sessionUser->getMana());
         }
     }
+
+
 
 }

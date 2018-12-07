@@ -32,34 +32,52 @@ session_start();
 //$current_character = CharacterChar::unseralizeSession($_SESSION["current_character"]);
 
 
-//set stats with items in inventory if he has items
+
 
 
 
 $current_boss = $_SESSION["boss"];
 $current_character = $_SESSION["character"];
+$current_skill = $_SESSION["skills"];
 
+
+//set stats with items in inventory if he has items
 if (!$_SESSION["character"]->isBuffActivated()) {
     $_SESSION["character"]->setBuffFromItems();
-    var_dump("SET BUFF FROM ITEMS DONE");
 }
+
 
 //init turn system
 $turnManager = new TurnManager(); //default played is false;
-$_SESSION["attacked"] = $turnManager->isPlayed(); //default false
+//$_SESSION["attacked"] = $turnManager->isPlayed(); //default false
 
 
+//when is character turn, check quantity of mana to enable skills
+$skills = Skill::checkManaAmount($current_character, $current_skill);
+
+
+//turn from skill
+if(isset($_POST["attack_skill"]) && isset($_POST["attack_skill_mana_cost"]) && $_SESSION["attacked"] === false){
+    var_dump("kappa");
+    $current_character->skillAttack($current_character, $current_boss, $_POST["attack_skill"], $_POST["attack_skill_mana_cost"]);
+    $turnManager->charAttacked(); //update user turn
+}
 
 
 //init turn
-if (isset($_POST["attack"])) {
+if (isset($_POST["attack"]) && $_SESSION["attacked"] === false) {
     //apply char damage to boss
-    $current_character->attack($current_character, $current_boss);
-    Spell::charSpell($current_character, $current_boss);
+    $current_character->attack($current_character, $current_boss, "character");
+
+
+    //TODO can be removed ?
+    Spell::charSpell($current_character, $current_boss); //items
+
     //update turn of characater
     $turnManager->charAttacked();
-}
+    Spell::clearDialog("SPELL_BOSS_CAST");
 
+}
 
 
 if (isset($_POST["pass_turn"])) {
@@ -67,6 +85,7 @@ if (isset($_POST["pass_turn"])) {
 
     //character dead
     if ($current_character->getHp() <= 0) {
+        Spell::clearDialog("ITEMS_PROC_DIALOG");
         header('Location: dead.php');
     } else if //boss dead
     ($current_boss->getHp() <= 0) {
@@ -74,15 +93,18 @@ if (isset($_POST["pass_turn"])) {
         $loots = $_SESSION["raid"]->getTableItems();
         $_SESSION["ITEM_DROP"] = $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) - 1)];
         $_SESSION["raid"]->getTableItems()[Utils::getRandom(0, sizeof($loots) - 1)];
+        Spell::clearDialog("ITEMS_PROC_DIALOG");
         header('Location: win.php');
     } else {
 
         //apply boss damage to char
-        $current_boss->attack($current_boss, $current_character);
+        $current_boss->attack($current_boss, $current_character, "boss");
         Spell::bossSpell($current_boss, $current_character);
 
         //reset turn
         $turnManager->bossAttacked();
+        Spell::clearDialog("ITEMS_PROC_DIALOG");
+
     }
 
 
@@ -93,12 +115,275 @@ if (isset($_POST["pass_turn"])) {
 <section class="mt-5">
     <div class="row">
         <div class="col-md-4">
+            <?php
+            //character attacked
+            if (isset($_SESSION["ITEMS_PROC_DIALOG"]) && $_SESSION["ITEMS_PROC_DIALOG"] != "") { ?>
+                <p class="mt-2 alert alert-primary">
+                    <?php echo $_SESSION['ITEMS_PROC_DIALOG'] ?>
+                </p>
+            <?php } ?>
             <div class="card" style="width: 22rem;">
                 <img class="card-img-top" src="<?php echo '../' . $current_character->getHereoPic() ?>"
                      alt="Card image cap">
                 <div class="card-body">
                     <h3 class="card-title text-center"><?php echo $current_character->getNickname() ?></h3>
                     <div class="card-text">
+                        <h5 class=""><i class="fa fa-malex"></i> Skills</h5>
+
+                        <?php
+
+                            if($turnManager->isPlayed()){
+                                //already played -> skill disable
+                                    ?>
+                                <ul class="mt-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <form method="post" action="portal_fight_scene.php">
+                                                <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][0]->getEffect() ?>">
+                                                <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][0]->getManaCost() ?>">
+                                                <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][0]->getIcon() ?>">
+                                                <br>
+                                                <input class="btn btn-success mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][0]->getName() ?>" disabled>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <form method="post" action="portal_fight_scene.php">
+                                                <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][1]->getEffect() ?>">
+                                                <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][1]->getManaCost() ?>">
+                                                <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][1]->getIcon() ?>">
+                                                <br>
+                                                <input class="btn btn-danger mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][1]->getName() ?>" disabled>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <form method="post" action="portal_fight_scene.php">
+                                                <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][2]->getEffect() ?>">
+                                                <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][2]->getManaCost() ?>">
+                                                <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][2]->getIcon() ?>">
+                                                <br>
+                                                <input class="btn btn-primary mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][2]->getName() ?>" disabled>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
+                                        </div>
+                                    </div>
+                                </ul>
+                            <?php } else {
+                                // skill 1 / 2 /3 enable by mana cost check method
+                                switch(sizeof($skills)){
+                                    case 1:
+                                        ?>
+                                        <ul class="mt-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][0]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][0]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][0]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-success mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][0]->getName() ?>">
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][1]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][1]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][1]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-danger mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][1]->getName() ?>" disabled>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][2]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][2]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][2]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-primary mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][2]->getName() ?>" disabled>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                        </ul>
+                                        <?php
+                                        break;
+                                    case 2:
+                                        ?>
+                                        <ul class="mt-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][0]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][0]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][0]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-success mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][0]->getName() ?>">
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][1]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][1]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][1]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-danger mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][1]->getName() ?>">
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][2]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][2]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][2]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-primary mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][2]->getName() ?>" disabled>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                        </ul>
+                                        <?php
+                                        break;
+
+                                    case 3:
+                                        ?>
+                                        <ul class="mt-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][0]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][0]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][0]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-success mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][0]->getName() ?>">
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][1]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][1]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][1]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-danger mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][1]->getName() ?>">
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][2]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][2]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][2]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-primary mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][2]->getName() ?>">
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                        </ul>
+                                        <?php
+                                        break;
+                                    default:
+                                        //all disable (array empty)
+                                        ?>
+                                        <ul class="mt-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][0]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][0]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][0]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-success mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][0]->getName() ?>" disabled>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][0]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][1]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][1]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][1]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-danger mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][1]->getName() ?>" disabled>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][1]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <form method="post" action="portal_fight_scene.php">
+                                                        <input type="hidden" name="attack_skill" value="<?php echo $_SESSION["skills"][2]->getEffect() ?>">
+                                                        <input type="hidden" name="attack_skill_mana_cost" value="<?php echo $_SESSION["skills"][2]->getManaCost() ?>">
+                                                        <img class="rounded" src="../assets/skill/<?php echo $_SESSION["skills"][2]->getIcon() ?>">
+                                                        <br>
+                                                        <input class="btn btn-primary mt-1 mb-3" type="submit" value="<?php echo $_SESSION["skills"][2]->getName() ?>" disabled>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><?php echo $_SESSION["skills"][2]->getDescription() ?></p>
+                                                </div>
+                                            </div>
+                                        </ul>
+                                        <?php
+                                        break;
+                                }
+                            }
+                        ?>
                         <h5 class=""><i class="fa fa-malex"></i> Statistiques</h5>
                         <ul class="mt-3">
                             <li style="list-style-type:none" class="mt-1">
@@ -112,6 +397,9 @@ if (isset($_POST["pass_turn"])) {
                             <li style="list-style-type:none" class="mt-1">
                                 <i class="fa fa-gem"
                                    style="color:dodgerblue"></i> <?php echo $current_character->getMana() ?>
+                            </li>
+                            <li style="list-style-type:none" class="mt-1">
+                                <i class="fas fa-apple-alt" style="color: indianred;"></i> <?php echo $current_character->getRegenManaRatio().' mana pts / turn' ?>
                             </li>
                         </ul>
                         <div>
@@ -205,14 +493,6 @@ if (isset($_POST["pass_turn"])) {
                 } ?>
             </p>
 
-            <?php
-            //character attacked
-            if (isset($_SESSION["ITEMS_PROC_DIALOG"]) && $_SESSION["ITEMS_PROC_DIALOG"] != "") { ?>
-                <p class="mt-2 alert alert-primary">
-                    <?php echo $_SESSION['ITEMS_PROC_DIALOG'] ?>
-                </p>
-            <?php } ?>
-
             <br>
             <br>
 
@@ -243,19 +523,23 @@ if (isset($_POST["pass_turn"])) {
 
         </div>
         <div class="col-md-4">
-            <div class="card" style="width: 22rem;">
-                <p class="alert alert-danger">
-                    <?php
-                        if(isset($_SESSION["SPELL_BOSS_CAST"])){?>
-                            <p><?php echo $current_boss->getHereo()
-                        . " cast".
-                        $_SESSION["SPELL_BOSS_CAST"]["name"] . " for " . $_SESSION["SPELL_BOSS_CAST"]["mana_cost"] . " mana" ?>
+            <?php
+            //character attacked
+            if ((isset($_SESSION["SPELL_BOSS_CAST"])) && $_SESSION["SPELL_BOSS_CAST"] !== "") { ?>
+                <p class="mt-2 alert alert-primary">
+                    <?php echo $current_boss->getHereo() . " cast [". $_SESSION["SPELL_BOSS_CAST"]["name"]."]" ?>
+                    <br>
+                     <img class="rounded" src="<?php echo $_SESSION["SPELL_BOSS_CAST"]["icon"] ?>"/>
+                    <?php echo " for " . $_SESSION["SPELL_BOSS_CAST"]["mana_cost"] . " <i class=\"fa fa-gem\"
+                                   style=\"color:dodgerblue\"></i> and deal ".$_SESSION["SPELL_BOSS_CAST"]["dmg"]."
+                                    <i class=\"fa fa-fist-raised\"
+                                   style=\"color:dimgrey\"></i>" ?>
+                    <br>
                 </p>
+            <?php } ?>
 
-                    ICON TOOD + BUG mana (faire attention au call de la regen sinon ca fausse le resultat);
-                </p>
-                        <?php }?>
-                </p>
+
+            <div class="card" style="width: 22rem;">
                 <img class="card-img-top" src="<?php echo $current_boss->getPicPath() ?>" alt="Card image cap">
                 <div class="card-body">
                     <h5 class="card-title text-center"><?php echo $current_boss->getHereo() ?></h5>
@@ -272,6 +556,9 @@ if (isset($_POST["pass_turn"])) {
                             <li style="list-style-type:none" class="mt-1">
                                 <i class="fa fa-gem"
                                    style="color:dodgerblue"></i> <?php echo $current_boss->getMana() ?>
+                            </li>
+                            <li style="list-style-type:none" class="mt-1">
+                                <i class="fas fa-apple-alt" style="color: indianred;"></i> <?php echo $current_character->getRegenManaRatio().' mana pts / turn' ?>
                             </li>
                         </ul>
                     </div>

@@ -29,7 +29,8 @@ session_start();
 
 <?php
 
-$item_1 = new Item("PickAxe", 20, 20, "Let's BUILD", "fortnite_pickaxe.jpg", "cool_boy.jpg", 10, "purple", "B U I L D");
+$item_1 = new Item("PickAxe", 20, 20, "Let's BUILD", "fortnite_pickaxe.jpg", "cool_boy.jpg", 10, "purple", "+40 <i class=\"fa fa-heart\"
+                                   style=\"color:darkred\"></i>");
 
 if(isset($_POST["pickaxe"])){
     $inventory = new Inventory();

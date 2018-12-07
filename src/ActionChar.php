@@ -8,21 +8,10 @@
 
 abstract class ActionChar
 {
-    //private $atk;
 
-
-    abstract function attack( $attaquant, $target);
-    abstract function specialAttack($attaquant, $target);
-    abstract function regenMana();
-
-
-    /**
-    public function getAtk(){
-
-    }
-
-    public function setAtk(){
-    }
-     **/
+    abstract function attack( $attaquant, $target, $typeAttquant); //basic attack both (boss / char)
+    abstract function specialAttack($attaquant, $target); //item
+    abstract function skillAttack($attaquant, $target, $skillEffect, $manaCost); //attack from skills (char)
+    abstract function regenMana(); //call on each type attack (boss /char)
 
 }

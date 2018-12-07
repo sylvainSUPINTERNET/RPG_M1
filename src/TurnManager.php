@@ -12,14 +12,20 @@ class TurnManager
     public $played;
 
 
+
+
     public function __construct(){
 
         $this->played = false;
     }
 
+
     public function charAttacked(){
+
         $this->setPlayed(true);
         $_SESSION["attacked"] = $this->isPlayed();
+        var_dump("  ATTACKED");
+        var_dump($_SESSION["attacked"]);
     }
 
     public function bossAttacked(){
@@ -42,6 +48,7 @@ class TurnManager
     {
         $this->played = $played;
     }
+
 
 
 }
